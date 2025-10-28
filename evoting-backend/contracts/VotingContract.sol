@@ -1,3 +1,18 @@
+//
+// =====================================================
+// 🗳️ Secure E-Voting System
+// =====================================================
+// 
+// @project     Blockchain-Powered Electronic Voting System
+// @author      Ebi
+// @github      https://github.com/electro-ebi
+// @description Smart contract for secure voting
+// 
+// @license     MIT
+// @year        2025
+// =====================================================
+
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
