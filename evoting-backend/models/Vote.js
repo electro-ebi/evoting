@@ -30,18 +30,46 @@ const Vote = sequelize.define(
       references: { model: "elections", key: "id" },
       onDelete: "CASCADE",
     },
+    // Secure voting fields
+    votingKeyId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "voting_keys", key: "id" },
+      onDelete: "SET NULL",
+    },
+    verificationHash: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
+    },
+    blockchainTxHash: {
+      type: DataTypes.STRING(66),
+      allowNull: true,
+    },
+    blockchainBlockHash: {
+      type: DataTypes.STRING(66),
+      allowNull: true,
+    },
+    blockchainBlockNumber: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    isSecureVote: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
-  { tableName: "votes" }
+  { 
+    tableName: "votes",
+    indexes: [
+      {
+        unique: true,
+        fields: ['userId', 'electionId'],
+        name: 'unique_user_election_vote'
+      }
+    ]
+  }
 );
 
-// Associations
-Vote.belongsTo(User, { foreignKey: "userId" });
-User.hasMany(Vote, { foreignKey: "userId" });
-
-Vote.belongsTo(Candidate, { foreignKey: "candidateId" });
-Candidate.hasMany(Vote, { foreignKey: "candidateId" });
-
-Vote.belongsTo(Election, { foreignKey: "electionId" });
-Election.hasMany(Vote, { foreignKey: "electionId" });
+// Associations are defined in models/index.js
 
 export default Vote;

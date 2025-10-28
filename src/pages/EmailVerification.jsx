@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import API_CONFIG from "../utils/apiConfig";
 import { Mail, RefreshCw, CheckCircle } from "lucide-react";
 
 const EmailVerification = () => {
@@ -11,7 +12,8 @@ const EmailVerification = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes in seconds
+  const otpInputRef = useRef(null);
 
   useEffect(() => {
     // Get email from location state or localStorage
@@ -62,7 +64,7 @@ const EmailVerification = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-email-otp", {
+      const res = await fetch(API_CONFIG.getAPIURL("/api/auth/verify-email-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -94,7 +96,7 @@ const EmailVerification = () => {
     setResendLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/resend-otp", {
+      const res = await fetch(API_CONFIG.getAPIURL("/api/auth/resend-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -104,7 +106,7 @@ const EmailVerification = () => {
 
       if (res.ok) {
         setSuccess("OTP resent successfully!");
-        setTimeLeft(300); // Reset timer
+        setTimeLeft(120); // Reset timer to 2 minutes
       } else {
         setError(data.message || "Failed to resend OTP");
       }
@@ -151,14 +153,20 @@ const EmailVerification = () => {
               Enter Verification Code
             </label>
             <input
+              ref={otpInputRef}
               type="text"
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onClick={() => otpInputRef.current?.select()}
               placeholder="000000"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-center text-2xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-4 text-center text-3xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-gray-50 hover:bg-white transition select-all"
               maxLength={6}
+              autoFocus
               required
             />
+            <p className="mt-2 text-xs text-gray-500 text-center">
+              💡 Click to select all • Enter 6-digit code from email
+            </p>
           </div>
 
           {timeLeft > 0 && (
@@ -186,15 +194,15 @@ const EmailVerification = () => {
           </p>
           <button
             onClick={handleResendOTP}
-            disabled={resendLoading || timeLeft > 240} // Can resend after 1 minute
+            disabled={resendLoading || timeLeft > 0} // Can only resend when timer expires
             className={`flex items-center justify-center gap-2 text-purple-600 hover:text-purple-700 transition ${
-              resendLoading || timeLeft > 240
+              resendLoading || timeLeft > 0
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}
           >
             <RefreshCw className={`w-4 h-4 ${resendLoading ? "animate-spin" : ""}`} />
-            {resendLoading ? "Sending..." : "Resend Code"}
+            {resendLoading ? "Sending..." : timeLeft > 0 ? `Resend in ${formatTime(timeLeft)}` : "Resend Code"}
           </button>
         </div>
 

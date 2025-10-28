@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, PlusCircle } from "lucide-react";
+import API_CONFIG from "../../utils/apiConfig";
 
 const AdminDashboard = () => {
   const [elections, setElections] = useState([]);
@@ -10,7 +11,7 @@ const AdminDashboard = () => {
     const fetchElections = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/elections", {
+        const res = await fetch(API_CONFIG.getAPIURL("/api/elections"), {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

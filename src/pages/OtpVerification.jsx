@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import API_CONFIG from "../utils/apiConfig";
 
 const OtpVerification = ({ phoneNumber, onSuccess }) => {
   const [otp, setOtp] = useState("");
@@ -7,7 +8,7 @@ const OtpVerification = ({ phoneNumber, onSuccess }) => {
 
   const handleVerify = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/otp/verify", {
+      const res = await axios.post(API_CONFIG.getAPIURL("/api/otp/verify"), {
         phoneNumber,
         otp,
       });

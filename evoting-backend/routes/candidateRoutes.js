@@ -81,12 +81,14 @@
 // };
 
 import express from "express";
-import { addCandidate } from "../controllers/candidateController.js";
+import { addCandidate, getCandidatesByElection } from "../controllers/candidateController.js";
 import { authenticate, authorize } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // Only admin can add candidates
 router.post("/", authenticate, authorize(["admin"]), addCandidate);
+// Public (or authenticated) endpoint to list candidates for an election
+router.get("/election/:electionId", getCandidatesByElection);
 
 export default router;

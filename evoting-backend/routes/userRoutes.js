@@ -1,6 +1,8 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { getUsersWithVotingStatus, getElectionVoteCount } from "../controllers/userController.js";
+import { authenticateToken, requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -85,5 +87,11 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// ---- ADMIN: GET USERS WITH VOTING STATUS ----
+router.get("/admin/election/:electionId/users-status", authenticateToken, requireAdmin, getUsersWithVotingStatus);
+
+// ---- GET ELECTION VOTE COUNT (PUBLIC) ----
+router.get("/election/:electionId/vote-count", getElectionVoteCount);
 
 export default router;

@@ -6,6 +6,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // User pages
 import Landing from "./pages/Landing";
@@ -15,11 +17,26 @@ import Results from "./pages/Results";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import EmailVerification from "./pages/EmailVerification";
+import SecureVoting from "./pages/SecureVoting";
+import VotingKeyDisplay from "./pages/VotingKeyDisplay";
+import FaceRegistration from "./pages/FaceRegistration";
+import WorkingFaceRegistration from "./pages/WorkingFaceRegistration";
+import FaceVerificationSettings from "./pages/FaceVerificationSettings";
+import FaceDiagnostic from "./pages/FaceDiagnostic";
+import SimpleFaceTest from "./pages/SimpleFaceTest";
+import SimpleFaceTest2 from "./pages/SimpleFaceTest2";
+import PerformanceDashboard from "./pages/PerformanceDashboard";
+import SecurityDemonstration from "./pages/SecurityDemonstration";
+import Info from "./pages/Info";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ElectionDashboard from "./pages/admin/ElectionDashboard";
 import CreateElection from "./pages/admin/CreateElection";
 import AddCandidate from "./pages/admin/AddCandidate";
+import BlockchainDashboard from "./pages/admin/BlockchainDashboard";
+import UserManagementSelector from "./pages/admin/UserManagementSelector";
+import UserManagement from "./pages/admin/UserManagement";
 
 // Components
 import Header from "./components/Header";
@@ -50,6 +67,17 @@ function App() {
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="/secure-vote/:electionId" element={<SecureVoting />} />
+        <Route path="/voting-key/:electionId" element={<VotingKeyDisplay />} />
+        <Route path="/face-registration" element={<FaceRegistration />} />
+        <Route path="/face-register-working" element={<WorkingFaceRegistration />} />
+        <Route path="/face-settings" element={<FaceVerificationSettings />} />
+        <Route path="/face-diagnostic" element={<FaceDiagnostic />} />
+        <Route path="/face-test" element={<SimpleFaceTest />} />
+        <Route path="/face-test2" element={<SimpleFaceTest2 />} />
+        <Route path="/performance-dashboard" element={<PerformanceDashboard />} />
+        <Route path="/security-demonstration" element={<SecurityDemonstration />} />
+        <Route path="/info" element={<Info />} />
 
         {/* User protected routes */}
         <Route
@@ -87,6 +115,14 @@ function App() {
           }
         />
         <Route
+          path="/admin/elections"
+          element={
+            <ProtectedRoute user={user} adminOnly>
+              <ElectionDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/create-election"
           element={
             <ProtectedRoute user={user} adminOnly>
@@ -102,12 +138,44 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* Other routes */}
-        <Route path="/results/:electionId" element={<Results />} />
-
+        <Route
+          path="/admin/blockchain"
+          element={
+            <ProtectedRoute user={user} adminOnly>
+              <BlockchainDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute user={user} adminOnly>
+              <UserManagementSelector />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:electionId"
+          element={
+            <ProtectedRoute user={user} adminOnly>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Router>
   );
 }

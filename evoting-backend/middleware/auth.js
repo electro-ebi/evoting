@@ -31,3 +31,19 @@ export const authorize = (roles = []) => {
     next();
   };
 };
+
+// Alias for authenticate (commonly used name)
+export const authenticateToken = authenticate;
+
+// Middleware specifically for admin-only routes
+export const requireAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized: no user" });
+  }
+  
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Forbidden: admin access required" });
+  }
+  
+  next();
+};

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_CONFIG from "../utils/apiConfig";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Register = () => {
     email: "",
     password: "",
     aadhaarNumber: "",
+    voterId: "",
     phoneNumber: "",
   });
   const [error, setError] = useState("");
@@ -26,13 +28,32 @@ const Register = () => {
       return;
     }
 
+    // Validate Aadhaar (Voter ID): 12-digit numeric
+    if (!/^\d{12}$/.test(formData.aadhaarNumber)) {
+      setError("Voter ID (Aadhaar) must be a 12-digit number");
+      return;
+    }
+
+    // Validate EPIC (Voter ID): 6-12 alphanumeric characters
+    if (!/^[A-Z0-9]{6,12}$/i.test(formData.voterId)) {
+      setError("Voter ID (EPIC) must be 6-12 alphanumeric characters");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(API_CONFIG.getAPIURL("/api/auth/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          aadhaarNumber: formData.aadhaarNumber,
+          voterId: formData.voterId,
+          phoneNumber: formData.phoneNumber,
+        }),
       });
 
       const data = await res.json();
@@ -98,15 +119,33 @@ const Register = () => {
             required
           />
 
-          <input
-            type="text"
-            name="aadhaarNumber"
-            placeholder="Aadhaar Number"
-            value={formData.aadhaarNumber}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Voter ID (EPIC)</label>
+            <input
+              type="text"
+              name="voterId"
+              placeholder="Enter your EPIC (6-12 letters/numbers)"
+              value={formData.voterId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Voter ID (Aadhaar)</label>
+            <input
+              type="text"
+              name="aadhaarNumber"
+              placeholder="Enter 12-digit Aadhaar number"
+              value={formData.aadhaarNumber}
+              onChange={handleChange}
+              pattern="\d{12}"
+              title="Enter a 12-digit number"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              required
+            />
+          </div>
 
           <input
             type="text"

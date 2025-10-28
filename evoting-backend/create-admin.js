@@ -36,6 +36,7 @@ const createAdmin = async () => {
       password: hashedPassword,
       role: "admin",
       aadhaarNumber: "123456789012",
+      voterId: "ADMIN0001",
       phoneNumber: "+1234567890",
       isVerified: true
     });

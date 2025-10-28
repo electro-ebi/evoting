@@ -10,7 +10,7 @@ export const sendOtp = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const otp = generateOTP();
-    const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+    const expiry = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
 
     user.otp = otp;
     user.otpExpiry = expiry;

@@ -1,23 +1,130 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ========================================
+# E-Voting System - Professional .gitignore
+# ========================================
 
-# dependencies
-/node_modules
+# Dependencies
+node_modules/
 /.pnp
 .pnp.js
+evoting-backend/node_modules/
 
-# testing
-/coverage
-
-# production
+# Production Build
 /build
+/dist
 
-# misc
-.DS_Store
+# Environment Variables & Secrets
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+evoting-backend/.env
+evoting-backend/.env.local
 
+# Certificates & Keys (Security)
+*.pem
+*.key
+*.crt
+cert.pem
+key.pem
+
+# Database Files
+*.sqlite
+*.db
+evoting-backend/*.sqlite
+evoting-backend/*.db
+
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
+*.log.*
+evoting-backend/*.log
+ngrok.log
+
+# Python Environment
+chart_env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing & Coverage
+/coverage
+.nyc_output
+/test-results/
+
+# Temporary Files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Debug & Diagnostic Files
+debug-*.html
+debug-*.js
+test-*.html
+*-test.html
+verify-*.js
+
+# Chart Generation Scripts (Keep only necessary ones)
+generate_*.py
+export-charts.js
+generate-metrics.js
+generate-professional-images.js
+view_charts.py
+report-images-python/
+
+# Setup Scripts (Temporary/Development)
+setup-*.sh
+start-*.sh
+fix-and-start.sh
+test-*.sh
+serve-https-build.py
+
+# Downloaded Tools
+ngrok
+ngrok-*
+*.tgz
+
+# Generated/Temporary Data
+performance-metrics.csv
+performance-metrics.json
+smart-contracts-data.json
+evoting-backend/smart-contracts-data.json
+
+# Blockchain Artifacts (Generated)
+evoting-backend/artifacts/
+evoting-backend/cache/
+evoting-backend/typechain-types/
+
+# Documentation (Keep main docs, exclude verbose/debug ones)
+PROJECT_DOCUMENTATION.txt
+BUTTON_TEST_GUIDE.txt
+CAMERA_FIX_SUMMARY.txt
+DEBUG_*.md
+*_GUIDE.txt
+TESTING_*.md
+
+# Build Tools
+convert-to-png.js
+create-png-tools.js
+download-*.js
+
+# Misc
+.cache/
+.eslintcache

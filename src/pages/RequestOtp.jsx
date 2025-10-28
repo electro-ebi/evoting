@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import API_CONFIG from "../utils/apiConfig";
 
 export default function RequestOtp() {
   const [email, setEmail] = useState("");
@@ -8,7 +9,7 @@ export default function RequestOtp() {
   const handleSend = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/send-otp", {
+      const res = await axios.post(API_CONFIG.getAPIURL("/api/auth/send-otp"), {
         email,
       });
       setMsg(res.data.message);

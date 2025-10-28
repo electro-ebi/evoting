@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_CONFIG from "../../utils/apiConfig";
 
 const AddCandidate = () => {
   const { electionId } = useParams();
@@ -32,7 +33,7 @@ const AddCandidate = () => {
 
       // API call to add candidate
       await axios.post(
-        "http://localhost:5000/api/candidates",
+        API_CONFIG.getAPIURL("/api/candidates"),
         { name: name.trim(), party: party.trim(), electionId },
         { headers: { Authorization: `Bearer ${token}` } }
       );

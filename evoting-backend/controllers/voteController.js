@@ -1,6 +1,10 @@
 // controllers/voteController.js
 import Candidate from "../models/Candidate.js";
 import Vote from "../models/Vote.js";
+import BlockchainService from "../blockchain/BlockchainService.js";
+
+// Initialize blockchain service
+const blockchainService = new BlockchainService();
 
 export const getResults = async (req, res) => {
   try {

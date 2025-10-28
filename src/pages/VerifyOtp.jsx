@@ -1,16 +1,16 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import API_CONFIG from "../utils/apiConfig";
 
 export default function VerifyOtp() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [msg, setMsg] = useState("");
-
   const handleVerify = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-otp",
+        API_CONFIG.getAPIURL("/api/auth/verify-otp"),
         { email, otp }
       );
       setMsg(res.data.message);

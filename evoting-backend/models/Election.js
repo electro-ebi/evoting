@@ -9,6 +9,14 @@ const Election = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    resultsPublished: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     title: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT },
     startDate: { type: DataTypes.DATE, allowNull: false },
