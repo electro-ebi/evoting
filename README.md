@@ -1,70 +1,307 @@
-# Getting Started with Create React App
+# 🗳️ Secure E-Voting System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A blockchain-powered electronic voting system with advanced security features including cryptographic key-based authentication, face verification, and real-time blockchain recording.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+### Core Voting System
+- **Multi-layer Cryptographic Security** - SHA-512 hashing, key-based authentication
+- **Blockchain Integration** - Immutable vote recording on Ethereum blockchain
+- **Real-time Results** - Live vote counting with blockchain verification
+- **Admin Dashboard** - Election management, candidate management, user tracking
+- **Mobile Responsive** - Works seamlessly on desktop and mobile devices
 
-### `npm start`
+### Advanced Security
+- **🔐 Secure Voting Keys** - Cryptographic key generation with expiry timers
+- **👤 Face Verification** - AI-powered facial recognition using face-api.js
+- **📧 Email OTP** - Two-factor authentication via email
+- **🔒 JWT Authentication** - Secure session management
+- **⏰ Time-based Voting** - Automatic election scheduling with validity checks
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### User Experience
+- **One-click Key Copy** - Dedicated key display page with clipboard integration
+- **Auto-fill Forms** - Seamless navigation between pages with state management
+- **Progress Tracking** - Visual step indicators for voting process
+- **Countdown Timers** - Real-time expiry warnings for voting keys
+- **User Management** - Admin panel showing voting status for all users
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📋 Prerequisites
 
-### `npm test`
+- **Node.js** (v16 or higher)
+- **npm** or **yarn**
+- **MySQL** database
+- **MetaMask** (for blockchain interactions)
+- **Gmail account** (for email services)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Installation
 
-### `npm run build`
+### 1. Clone the Repository
+```bash
+git clone <your-repo-url>
+cd evoting-web
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Install Frontend Dependencies
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. Install Backend Dependencies
+```bash
+cd evoting-backend
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 4. Configure Environment Variables
 
-### `npm run eject`
+Create `.env` file in `evoting-backend/`:
+```env
+# Database
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=evoting_db
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# JWT Secret
+JWT_SECRET=your_super_secret_jwt_key
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Email Configuration (Gmail)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_specific_password
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Blockchain (optional)
+BLOCKCHAIN_NETWORK=localhost
+BLOCKCHAIN_PORT=8545
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 5. Setup Database
+```bash
+# The app will auto-create tables on first run
+# Or manually create the database:
+mysql -u root -p
+CREATE DATABASE evoting_db;
+```
 
-## Learn More
+### 6. Deploy Smart Contracts (Optional)
+```bash
+cd evoting-backend
+npx hardhat node  # In one terminal
+npx hardhat run scripts/deploy.js --network localhost  # In another terminal
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🚀 Running the Application
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Development Mode
 
-### Code Splitting
+**Terminal 1 - Backend:**
+```bash
+cd evoting-backend
+npm start
+```
+Backend runs on: `http://localhost:5000`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Terminal 2 - Frontend:**
+```bash
+npm start
+```
+Frontend runs on: `http://localhost:3000`
 
-### Analyzing the Bundle Size
+### Production Build
+```bash
+npm run build
+# Serve the build folder with your preferred server
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📱 Using Cloudflare Tunnels (Public Access)
 
-### Making a Progressive Web App
+For remote access without port forwarding:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**Terminal 1 - Backend Tunnel:**
+```bash
+cloudflared tunnel --url http://localhost:5000
+# Note the URL: https://xxx-xxx-xxx.trycloudflare.com
+```
 
-### Advanced Configuration
+**Terminal 2 - Frontend Tunnel:**
+```bash
+cloudflared tunnel --url http://localhost:3000
+# Note the URL: https://yyy-yyy-yyy.trycloudflare.com
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+**Terminal 3 - Update Backend CORS:**
+```bash
+# Add the frontend tunnel URL to evoting-backend/server.js CORS origins
+# Restart backend after updating
+```
 
-### Deployment
+Access your app via the frontend tunnel URL!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 👤 Creating Admin Account
 
-### `npm run build` fails to minify
+```bash
+cd evoting-backend
+node create-admin.js
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Follow prompts to create an admin user.
+
+## 📚 Project Structure
+
+```
+evoting-web/
+├── src/                          # Frontend React app
+│   ├── components/               # Reusable components
+│   ├── pages/                    # Page components
+│   │   ├── admin/                # Admin pages
+│   │   ├── Dashboard.js          # User dashboard
+│   │   ├── SecureVoting.jsx      # Secure voting flow
+│   │   ├── VotingKeyDisplay.jsx  # Key display with copy button
+│   │   └── ...
+│   └── utils/                    # Utility functions
+│       └── apiConfig.js          # Dynamic API configuration
+│
+├── evoting-backend/              # Backend Node.js server
+│   ├── controllers/              # API controllers
+│   ├── models/                   # Database models
+│   ├── routes/                   # API routes
+│   ├── services/                 # Business logic
+│   ├── middleware/               # Auth middleware
+│   ├── contracts/                # Solidity smart contracts
+│   ├── utils/                    # Crypto utilities
+│   └── server.js                 # Express server
+│
+└── documentation/                # Project documentation
+```
+
+## 🔐 Security Features
+
+### Cryptographic Voting Keys
+1. User requests voting key
+2. System generates 64-character SHA-512 key
+3. Key sent via email with 5-minute expiry
+4. User copies key from dedicated display page
+5. Key verified before allowing vote
+
+### Face Verification (Optional)
+- Registration: Capture and store facial descriptors
+- Verification: Real-time face matching during voting
+- Multiple metrics: Euclidean distance, cosine similarity
+- Quality checks: Lighting, angle, descriptor strength
+
+### Blockchain Recording
+- All votes recorded on Ethereum blockchain
+- Immutable audit trail
+- Smart contract-based vote tallying
+- Cryptographic proof of vote
+
+## 🎯 User Workflow
+
+### For Voters
+1. **Register** - Create account with email verification
+2. **Login** - Authenticate with email/password
+3. **Face Registration** (optional) - Register facial biometrics
+4. **Request Voting Key** - For active election
+5. **Copy Key** - From dedicated display page
+6. **Verify Key** - Paste key to proceed
+7. **Cast Vote** - Select candidate
+8. **Confirmation** - Receive confirmation via email
+
+### For Admins
+1. **Create Election** - Set title, dates, description
+2. **Add Candidates** - Add candidates for election
+3. **Monitor Voting** - View live vote counts
+4. **User Management** - Track who has voted
+5. **View Results** - See final results after election ends
+
+## 📊 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/verify-email` - Email verification
+
+### Elections
+- `GET /api/elections` - Get all elections
+- `POST /api/elections` - Create election (admin)
+- `GET /api/elections/:id` - Get election details
+
+### Secure Voting
+- `POST /api/secure-voting/request-key` - Request voting key
+- `GET /api/secure-voting/get-key/:email/:electionId` - Get voting key
+- `POST /api/secure-voting/verify-key` - Verify voting key
+- `POST /api/secure-voting/submit-vote` - Submit vote
+
+### Admin
+- `GET /api/users/admin/election/:id/users-status` - Get voting status
+- `GET /api/blockchain/stats` - Get blockchain statistics
+
+## 🧪 Testing
+
+```bash
+# Run frontend tests
+npm test
+
+# Run backend tests
+cd evoting-backend
+npm test
+```
+
+## 🐛 Troubleshooting
+
+### Database Connection Issues
+- Check MySQL is running
+- Verify credentials in `.env`
+- Ensure database exists
+
+### Email Not Sending
+- Use Gmail App Password (not regular password)
+- Enable "Less secure app access" or use OAuth2
+- Check `.env` EMAIL_USER and EMAIL_PASS
+
+### Blockchain Issues
+- Ensure Hardhat node is running
+- Check MetaMask is connected
+- Verify contract deployment
+
+### Face Verification Not Working
+- Allow camera permissions in browser
+- Use HTTPS (required for camera access)
+- Ensure good lighting for face detection
+
+## 📖 Documentation
+
+- [BLOCKCHAIN_INTEGRATION.md](BLOCKCHAIN_INTEGRATION.md) - Blockchain setup guide
+- [ENHANCED_SECURITY_SYSTEM.md](ENHANCED_SECURITY_SYSTEM.md) - Security features
+- [VOTING_KEY_COPY_FEATURE.md](VOTING_KEY_COPY_FEATURE.md) - Key copy feature
+- [QUICK_START.md](QUICK_START.md) - Quick setup guide
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- React.js for the frontend framework
+- Express.js for the backend API
+- Hardhat for blockchain development
+- face-api.js for facial recognition
+- TailwindCSS for styling
+- Sequelize for database ORM
+
+## 📞 Support
+
+For issues, questions, or contributions, please open an issue on GitHub.
+
+---
+
+**Made with ❤️ for secure and transparent elections**
