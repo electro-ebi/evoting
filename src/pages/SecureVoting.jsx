@@ -1,32 +1,7 @@
-/**
- * =====================================================
- * 🗳️ Secure E-Voting System
- * =====================================================
- * 
- * @project     Blockchain-Powered Electronic Voting System
- * @author      Ebi
- * @github      https://github.com/electro-ebi
- * @description A secure, transparent, and tamper-proof voting
- *              system with cryptographic authentication, face
- *              verification, and blockchain integration.
- * 
- * @features    - Multi-layer cryptographic security
- *              - Blockchain vote recording
- *              - Face verification
- *              - Real-time results
- *              - Admin dashboard
- * 
- * @license     MIT
- * @year        2025
- * =====================================================
- */
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Clock } from 'lucide-react';
 import API_CONFIG from '../utils/apiConfig';
-import FaceVerificationVoting from '../components/FaceVerificationVoting';
-import { Clock, Copy, Check } from 'lucide-react';
 
 const SecureVoting = () => {
   const { electionId } = useParams();
@@ -43,13 +18,8 @@ const SecureVoting = () => {
   const [message, setMessage] = useState('');
   const [statusHint, setStatusHint] = useState('');
   const [election, setElection] = useState(null);
-  const [faceVerificationRequired, setFaceVerificationRequired] = useState(false);
-  const [faceVerificationComplete, setFaceVerificationComplete] = useState(false);
-  const [faceVerificationData, setFaceVerificationData] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(0); // Timer for key expiry
+  const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const keyInputRef = useRef(null);
 
   // Fetch election details
   const fetchElectionDetails = useCallback(async () => {
@@ -86,8 +56,13 @@ const SecureVoting = () => {
           if (prev <= 1) {
             clearInterval(timer);
             setTimerActive(false);
-            setMessage('❌ Your voting key has expired. Please request a new one.');
-            setStep(1);
+            if (step === 2) {
+              setMessage('❌ Key entry time expired. Please request a new key.');
+              setStep(1);
+            } else if (step === 3) {
+              setMessage('❌ Candidate selection time expired. Please verify your key again.');
+              setStep(2);
+            }
             return 0;
           }
           return prev - 1;
@@ -95,7 +70,7 @@ const SecureVoting = () => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timerActive, timeLeft]);
+  }, [timerActive, timeLeft, step]);
 
   // If redirected back from Vote.jsx with confirmation, show Step 4
   useEffect(() => {
@@ -105,38 +80,6 @@ const SecureVoting = () => {
       setMessage('✅ Vote submitted successfully! Confirmation sent to your email.');
     }
   }, [location.search]);
-
-  // If voting key is passed via navigation state, pre-fill and go to step 2
-  useEffect(() => {
-    if (location.state?.votingKey) {
-      setPrimaryKey(location.state.votingKey);
-      setStep(2);
-      setTimeLeft(300); // Start 5-minute timer
-      setTimerActive(true);
-    }
-  }, [location.state]);
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const handleCopyKey = async () => {
-    try {
-      await navigator.clipboard.writeText(primaryKey);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const handleSelectKey = () => {
-    if (keyInputRef.current) {
-      keyInputRef.current.select();
-    }
-  };
 
   // Prefill email from logged-in user
   useEffect(() => {
@@ -156,6 +99,12 @@ const SecureVoting = () => {
       requestVotingKey();
     }
   }, [step, email]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Step 1: Request voting key
   const requestVotingKey = async (e) => {
@@ -179,24 +128,21 @@ const SecureVoting = () => {
       const data = await response.json();
       
       if (data.success) {
-        // Redirect to key display page where user can copy the key
-        navigate(`/voting-key/${electionId}`, {
-          state: {
-            election,
-            expiryTime: data.keyExpiry
-          }
-        });
+        setMessage('✅ Voting key sent to your email. Check your inbox.');
+        setStep(2);
+        setTimeLeft(120); // 2 minutes for key entry
+        setTimerActive(true);
       } else {
         setMessage(`❌ ${data.message}`);
         // If election inactive or user missing, provide a hint
         if (data.message?.toLowerCase().includes('not currently active')) {
           setStatusHint('Tip: Set accurate Start/End Date & Time for this election in Admin > Create Election.');
         }
-        // If key already generated, redirect to key display page
+        // If key already generated, navigate to Step 2 so user can paste it
         if (data.message?.toLowerCase().includes('already generated')) {
-          navigate(`/voting-key/${electionId}`, {
-            state: { election }
-          });
+          setStep(2);
+          setTimeLeft(120); // 2 minutes for key entry
+          setTimerActive(true);
         }
       }
     } catch (error) {
@@ -229,9 +175,8 @@ const SecureVoting = () => {
       if (data.success) {
         setConfirmationKey(data.confirmationKey);
         setMessage('✅ Voting key verified. Proceeding to candidate selection...');
-        // Skip face verification - go directly to step 3
         setStep(3);
-        setTimeLeft(300); // Reset timer for confirmation key (5 minutes)
+        setTimeLeft(180); // 3 minutes for candidate selection
         setTimerActive(true);
       } else {
         setMessage(`❌ ${data.message}`);
@@ -267,6 +212,7 @@ const SecureVoting = () => {
       if (data.success) {
         setMessage('✅ Vote submitted successfully! Confirmation sent to your email.');
         setStep(4);
+        setTimerActive(false); // Stop timer on successful vote
       } else {
         setMessage(`❌ ${data.message}`);
       }
@@ -274,24 +220,6 @@ const SecureVoting = () => {
       setMessage('❌ Error submitting vote');
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Face verification handlers
-  const handleFaceVerificationSuccess = (data) => {
-    setFaceVerificationComplete(true);
-    setFaceVerificationData(data);
-    setMessage('✅ Face verification successful! Proceeding to candidate selection...');
-    setStep(3); // Move to candidate selection
-  };
-
-  const handleFaceVerificationFailed = (error) => {
-    if (error.requiresFaceRegistration) {
-      setMessage('❌ Face not registered. Please register your face first.');
-      setStep(1); // Go back to start
-    } else {
-      setMessage('❌ Face verification failed. Please try again.');
-      setStep(2); // Go back to key verification
     }
   };
 
@@ -420,36 +348,42 @@ const SecureVoting = () => {
             {step === 2 && (
               <div>
                 <h3 className="text-2xl font-bold mb-6 text-gray-800">Step 2: Verify Voting Key</h3>
+                
+                {/* Timer Warning */}
+                {timeLeft > 0 && (
+                  <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-400 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-6 h-6 text-red-600" />
+                      <div>
+                        <h4 className="font-semibold text-red-800">Key Entry Time Limit</h4>
+                        <p className="text-red-700">
+                          Time remaining: <span className="font-bold text-2xl">{formatTime(timeLeft)}</span>
+                        </p>
+                        <p className="text-sm text-red-600 mt-1">Enter your key before time expires</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-yellow-50 p-6 rounded-lg mb-6">
                   <h4 className="font-semibold text-yellow-800 mb-2">📧 Check Your Email</h4>
                   <p className="text-yellow-700">
                     A voting key has been sent to your email. Enter the 64-character key below.
                   </p>
-                  {timeLeft > 0 && (
-                    <div className="flex items-center gap-2 mt-3 text-yellow-800">
-                      <Clock className="w-5 h-5" />
-                      <span className="font-semibold">Key expires in: {formatTime(timeLeft)}</span>
-                    </div>
-                  )}
                 </div>
                 <form onSubmit={verifyVotingKey} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Voting Key (64 characters)
+                      Voting Key
                     </label>
                     <input
-                      ref={keyInputRef}
                       type="text"
                       value={primaryKey}
                       onChange={(e) => setPrimaryKey(e.target.value)}
-                      onClick={handleSelectKey}
-                      placeholder="Paste your 64-character voting key here"
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-gray-50 hover:bg-white transition"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                      placeholder="Enter the 64-character voting key from your email"
                       required
                     />
-                    <p className="mt-2 text-xs text-gray-500">
-                      💡 Check your email for the voting key, or click "View My Key" below
-                    </p>
                   </div>
                   <button
                     type="submit"
@@ -466,43 +400,7 @@ const SecureVoting = () => {
                   >
                     {loading ? 'Sending...' : 'Resend Key'}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/voting-key/${electionId}`, { state: { election } })}
-                    className="w-full border border-blue-300 text-blue-700 py-3 px-6 rounded-lg hover:bg-blue-50 font-semibold"
-                  >
-                    📧 View My Key
-                  </button>
                 </form>
-              </div>
-            )}
-
-            {/* Step 2.5: Face Verification */}
-            {step === 2.5 && (
-              <div>
-                <h3 className="text-2xl font-bold mb-6 text-gray-800">Step 2.5: Face Verification</h3>
-                <div className="bg-purple-50 p-6 rounded-lg mb-6">
-                  <h4 className="font-semibold text-purple-800 mb-2">🔐 Identity Verification Required</h4>
-                  <p className="text-purple-700">
-                    For secure voting, please verify your identity using face recognition.
-                  </p>
-                </div>
-                
-                <FaceVerificationVoting
-                  onVerificationSuccess={handleFaceVerificationSuccess}
-                  onVerificationFailed={handleFaceVerificationFailed}
-                  electionId={electionId}
-                  isRequired={true}
-                />
-
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={() => setStep(2)}
-                    className="text-gray-600 hover:text-gray-800 underline"
-                  >
-                    ← Back to Key Verification
-                  </button>
-                </div>
               </div>
             )}
 
@@ -510,17 +408,28 @@ const SecureVoting = () => {
             {step === 3 && (
               <div>
                 <h3 className="text-2xl font-bold mb-6 text-gray-800">Step 3: Cast Your Vote</h3>
+                
+                {/* Timer Warning */}
+                {timeLeft > 0 && (
+                  <div className="mb-6 p-4 bg-orange-50 border-l-4 border-orange-400 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-6 h-6 text-orange-600" />
+                      <div>
+                        <h4 className="font-semibold text-orange-800">Candidate Selection Time Limit</h4>
+                        <p className="text-orange-700">
+                          Time remaining: <span className="font-bold text-2xl">{formatTime(timeLeft)}</span>
+                        </p>
+                        <p className="text-sm text-orange-600 mt-1">Select your candidate and vote before time expires</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-green-50 p-6 rounded-lg mb-6">
                   <h4 className="font-semibold text-green-800 mb-2">✅ Key Verified</h4>
                   <p className="text-green-700">
                     Your voting key has been verified. Select your candidate and submit your vote.
                   </p>
-                  {timeLeft > 0 && (
-                    <div className="flex items-center gap-2 mt-3 text-green-800">
-                      <Clock className="w-5 h-5" />
-                      <span className="font-semibold">Time remaining: {formatTime(timeLeft)}</span>
-                    </div>
-                  )}
                 </div>
                 <form onSubmit={submitVote} className="space-y-6">
                   <div>

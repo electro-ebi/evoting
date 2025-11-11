@@ -30,7 +30,7 @@ const API_CONFIG = {
 
     // If on Cloudflare tunnel (HTTPS access)
     if (hostname.includes('trycloudflare.com')) {
-      return "https://easter-dinner-overall-cradle.trycloudflare.com";
+      return "https://exemption-zoning-determination-refused.trycloudflare.com";
     }
 
     // If on localtunnel (mobile HTTPS access)

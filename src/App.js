@@ -100,7 +100,6 @@ function App() {
         <Route path="/face-test2" element={<SimpleFaceTest2 />} />
         <Route path="/performance-dashboard" element={<PerformanceDashboard />} />
         <Route path="/security-demonstration" element={<SecurityDemonstration />} />
-        <Route path="/info" element={<Info />} />
 
         {/* User protected routes */}
         <Route
@@ -182,6 +181,14 @@ function App() {
           element={
             <ProtectedRoute user={user} adminOnly>
               <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/info"
+          element={
+            <ProtectedRoute user={user} adminOnly>
+              <Info />
             </ProtectedRoute>
           }
         />

@@ -104,13 +104,15 @@ function Header({ user, setUser }) {
               </Link>
             )}
 
-            {/* Info link - available to all users */}
-            <Link
-              to="/info"
-              className="text-white px-3 py-1 rounded-xl font-semibold hover:text-purple-200 transition"
-            >
-              Info
-            </Link>
+            {/* Info link - available to admins only */}
+            {user.role === "admin" && (
+              <Link
+                to="/info"
+                className="text-white px-3 py-1 rounded-xl font-semibold hover:text-purple-200 transition"
+              >
+                Info
+              </Link>
+            )}
 
             <button
               onClick={handleLogout}

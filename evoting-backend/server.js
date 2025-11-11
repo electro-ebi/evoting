@@ -62,8 +62,11 @@ app.use(
       "https://contracting-factor-arrangement-shaped.trycloudflare.com", // Previous Cloudflare frontend
       "https://affects-told-arlington-carnival.trycloudflare.com", // Previous Cloudflare frontend tunnel
       "https://cement-wonderful-nursery-whilst.trycloudflare.com", // Previous Cloudflare frontend tunnel
-      "https://dui-pix-ate-ment.trycloudflare.com", // Current Cloudflare frontend tunnel
+      "https://dui-pix-ate-ment.trycloudflare.com", // Previous Cloudflare frontend tunnel
+      "https://took-sic-professor-example.trycloudflare.com" ,// Current Cloudflare frontend tunnel
+      "https://coins-quantities-responsibilities-pupils.trycloudflare.com"
     ],
+    origin: "*",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
